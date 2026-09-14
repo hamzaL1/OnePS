@@ -1260,6 +1260,8 @@ export function establishPrimitive(options) {
         return Promise.reject(new Error("core: unsupported browser"));
 
     onEvent = typeof opts.onEvent === "function" ? opts.onEvent : null;
+    emit("BARRIER-MODE",
+    typeof opts.beforeCriticalLoad === "function" ? "CUSTOM" : "DEFAULT");
     criticalBarrier = typeof opts.beforeCriticalLoad === "function"
         ? opts.beforeCriticalLoad : defaultCriticalBarrier;
 
