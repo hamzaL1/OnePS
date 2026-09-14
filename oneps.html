@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#07131f">
+<meta name="author" content="bel">
+<meta name="description" content="OnePS — the one piece is PRIM-OK. A public note on the last mile of the 13.02 chain.">
+<title>OnePS — bel — the one piece is PRIM-OK</title>
+<style>
+  :root{
+    --bg:#06121b; --bg2:#0a1e2b; --panel:rgba(8,26,38,.72);
+    --ink:#d8f2f8; --muted:#7fa8b8; --dim:#4a7080;
+    --cyan:#39aeca; --lime:#4a9f55; --gold:#c9a961;
+    --line:rgba(57,174,202,.25);
+    --mono:Consolas,"DejaVu Sans Mono",monospace;
+    --serif:"Iowan Old Style","Palatino",Georgia,serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;min-height:100vh;background:var(--bg);color:var(--ink);
+    font:16px/1.65 var(--serif)}
+  body{
+    background:
+      radial-gradient(1200px 800px at 50% -10%,rgba(57,174,202,.12),transparent 60%),
+      radial-gradient(900px 600px at 80% 100%,rgba(201,169,97,.08),transparent 60%),
+      linear-gradient(180deg,var(--bg2) 0,var(--bg) 60%,#050e15 100%);
+  }
+  header.masthead{
+    display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;
+    padding:18px 28px;border-bottom:1px solid var(--line);
+    position:sticky;top:0;z-index:5;
+    backdrop-filter:blur(6px);background:rgba(6,18,27,.78);
+  }
+  header .brand{font:700 20px/1 var(--mono);letter-spacing:.24em;color:var(--cyan)}
+  header .brand b{color:var(--lime);font-weight:700}
+  header .tag{font:400 11px/1 var(--mono);letter-spacing:.24em;
+    color:var(--dim);text-transform:uppercase}
+  header .links{margin-left:auto;display:flex;gap:14px}
+  header .links a{
+    font:400 11px/1 var(--mono);letter-spacing:.14em;color:var(--muted);
+    text-decoration:none;text-transform:uppercase;
+  }
+  header .links a:hover{color:var(--cyan)}
+  main{max-width:820px;margin:0 auto;padding:40px 28px 120px}
+  h1{font:700 38px/1.15 var(--serif);margin:0 0 8px;color:var(--ink);
+    letter-spacing:-.01em}
+  h1 em{color:var(--gold);font-style:normal}
+  h2{font:700 22px/1.3 var(--serif);margin:52px 0 14px;color:var(--cyan)}
+  h3{font:700 17px/1.3 var(--serif);margin:30px 0 8px;color:var(--ink)}
+  p{margin:0 0 18px}
+  .byline{color:var(--muted);font:400 12px/1.4 var(--mono);
+    letter-spacing:.18em;text-transform:uppercase;margin:0 0 34px}
+  .byline a{color:var(--cyan);text-decoration:none}
+  .byline a:hover{text-decoration:underline}
+  .lede{font-size:19px;line-height:1.6;color:var(--ink)}
+  em{color:var(--cyan);font-style:normal}
+  code{font-family:var(--mono);font-size:13px;color:var(--cyan);
+    background:rgba(57,174,202,.06);padding:1px 5px;border-radius:2px}
+  blockquote{border-left:2px solid var(--gold);margin:28px 0;
+    padding:4px 0 4px 22px;color:var(--muted);font-style:italic;
+    font-size:17px}
+  hr{border:0;border-top:1px solid var(--line);margin:56px 0}
+  .note{font:400 13px/1.7 var(--mono);color:var(--muted);
+    padding:16px 18px;border:1px solid var(--line);border-radius:3px;
+    background:rgba(3,10,16,.5);margin:24px 0}
+  .note b{color:var(--ink)}
+  .launch{margin:34px 0 0;padding:26px;
+    border:1px solid var(--line);border-radius:4px;
+    background:var(--panel)}
+  .launch h2{margin-top:0}
+  .launch p.lead{color:var(--muted);margin:0 0 18px}
+  button#go{
+    display:block;width:100%;padding:18px;margin-top:6px;
+    background:linear-gradient(90deg,#2a6b7d,var(--cyan));
+    border:0;color:#06121b;font:700 15px/1 var(--mono);
+    letter-spacing:.24em;text-transform:uppercase;cursor:pointer;
+    border-radius:3px;
+    transition:filter .15s;
+  }
+  button#go:hover{filter:brightness(1.08)}
+  button#go:disabled{opacity:.45;cursor:not-allowed}
+  pre#out{
+    margin:20px 0 0;padding:16px;min-height:160px;max-height:480px;
+    overflow:auto;background:#030a10;border:1px solid var(--line);
+    border-radius:3px;font:12px/1.55 var(--mono);color:var(--muted);
+    white-space:pre-wrap;word-break:break-all;
+    scrollbar-width:thin;scrollbar-color:var(--line) transparent;
+  }
+  pre#out::-webkit-scrollbar{width:8px}
+  pre#out::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px}
+  pre#out::selection{background:rgba(57,174,202,.35)}
+  #state{display:none}
+  .prize{
+    margin:64px 0 0;padding:36px;border:1px solid var(--gold);
+    border-radius:4px;background:rgba(201,169,97,.07);
+    position:relative;
+  }
+  .prize::before{
+    content:'';position:absolute;inset:6px;
+    border:1px solid rgba(201,169,97,.28);border-radius:2px;
+    pointer-events:none;
+  }
+  .prize h2{color:var(--gold);margin-top:0;font-size:26px}
+  .prize .call{font:700 19px/1.5 var(--serif);color:var(--gold);
+    margin:22px 0 18px}
+  .prize p{color:var(--ink)}
+  .prize pre{background:#030a10;padding:16px;border-radius:3px;
+    font:12px/1.6 var(--mono);color:var(--cyan);overflow:auto;
+    border:1px solid var(--line);margin:18px 0}
+  .prize .sig{color:var(--gold);font:400 14px/1.5 var(--mono);
+    margin-top:28px;letter-spacing:.06em}
+  footer.end{
+    margin-top:64px;padding-top:24px;border-top:1px solid var(--line);
+    font:400 12px/1.7 var(--mono);color:var(--dim);
+    letter-spacing:.06em;
+  }
+  footer.end a{color:var(--muted);text-decoration:none}
+  footer.end a:hover{color:var(--cyan)}
+  .banner{
+    padding:14px 18px;margin:0 0 34px;border-left:3px solid var(--gold);
+    background:rgba(201,169,97,.06);font:400 14px/1.6 var(--serif);
+    color:var(--ink);
+  }
+  .banner b{color:var(--gold)}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="brand">ONE<b>P</b>S</div>
+  <div class="tag">the one piece is prim-ok</div>
+  <div class="links">
+    <a href="https://jb.0d01.wtf" target="_blank" rel="noopener">jb.0d01.wtf</a>
+    <a href="https://x.com/belsploit" target="_blank" rel="noopener">@belsploit</a>
+  </div>
+</header>
+
+<main>
+
+  <h1>The one piece is <em>PRIM-OK</em>.</h1>
+  <p class="byline">
+    by <a href="https://x.com/belsploit" target="_blank" rel="noopener">bel</a>
+    &nbsp;·&nbsp;
+    <a href="https://jb.0d01.wtf" target="_blank" rel="noopener">jb.0d01.wtf</a>
+  </p>
+
+  <div class="banner">
+    <b>Everything in this chain depends on one value.</b> It's not a config knob, not
+    an offset, not a slab size. It's a function. Its absence is the difference between
+    a jailbreak that runs on every cold boot and a jailbreak that hits one time in six.
+    Read the section titled <em>Where the road actually ends</em>.
+  </div>
+
+  <p class="lede">
+    I started this with one question: <em>does <code>pru_bind</code> copy the sockaddr,
+    or retain it?</em> Everything since has been an attempt to answer that. Every
+    attempt goes through the same door. Its name is <code>PRIM-OK</code>.
+  </p>
+
+  <p>
+    <code>PRIM-OK</code> is what <code>core.js</code> prints when the SSV primitive lands.
+    It means the fake <code>JSArrayBuffer</code> is live in the heap, <code>p.read8</code>
+    and <code>p.write8</code> work, and the whole kernel walk is one function call away.
+    Without it, nothing downstream runs. No <code>BASES</code>. No <code>KBASE-PROBE</code>.
+    No <code>PROC</code>. No <code>PRU</code>. No <code>FN_BYTES</code>.
+  </p>
+
+  <p>
+    The entire chain sleeps behind one line of output. <em>That line is the one piece.</em>
+  </p>
+
+  <h2>Credit where it's due</h2>
+
+  <p>
+    <b>Hassan</b> found the original SSV shape. The <code>k=2</code> duplicate-index
+    trick, the predecessor fill, the <code>history.replaceState</code> collision — that's
+    his research. Everything below is built on top of it. I'm publishing this because
+    his work deserves a clean writeup, and because the last mile is missing and I want
+    the community to look at it.
+  </p>
+
+  <p>
+    The offsets for 13.02 are from public dumps. The kernel walk is mine. The
+    <code>plausibleAddress</code> fix is mine. The realisation that
+    <code>beforeCriticalLoad</code> is the missing piece is the point of this page.
+  </p>
+
+  <h2>What I tried</h2>
+
+  <h3>Every slab, every separator, every predecessor</h3>
+  <p>
+    <code>slab=0x200000</code> through <code>slab=0xe00000</code>. Only <code>0x800000</code>
+    keeps the state blob alive past the drains. Every other value gives
+    <code>Unable to deserialize</code>. That one is solid.
+  </p>
+  <p>
+    <code>pred=0x80000</code> gives <code>ZERO-HEADER-MISS</code>. <code>pred=0x100000</code>
+    gives <code>Unable to deserialize</code>. The window is one page wide. <code>0xa0000</code>
+    is the value that has landed twice.
+  </p>
+  <p>
+    <code>sep</code>, <code>guard</code>, <code>early</code>, <code>bfly</code> — swept
+    every value in range. No combination shifted the failure modes.
+  </p>
+
+  <h3>Every slot count, every drain size</h3>
+  <p>
+    <code>slots=4000000</code> fits. <code>slots=8700000</code> fits with <code>drain:64</code>.
+    <code>slots=9000000</code> OOMs on a settled boot. Above 8700000 the carrier itself is
+    more than the PS4 13.02 browser's sysmemory pool can hold, and the chain dies at
+    <code>ADDROF-PREP-BEGIN</code>.
+  </p>
+  <p>
+    The FW 11.00 reference chain runs <code>slots=20000000</code> — 160 MB. That is
+    2.2× what 13.02 allows. It is why their chain hits <code>READ-PRIMITIVE-PASS</code>
+    on the first try and mine needs cold boots. Their pattern covers the entire JSC heap.
+    Mine covers a fifth of it.
+  </p>
+
+  <h3>Cold boots</h3>
+  <p>
+    Thirty of them. <code>PRIM-OK</code> printed twice.
+  </p>
+  <p>
+    Every cold boot re-rolls KASLR: kernel base, WebKit base, JSC heap base. The
+    exploit is deterministic for a given layout. A config matches some fraction of
+    layouts. Mine matches roughly 15%.
+  </p>
+  <p>
+    At 15% per roll, ten cold boots is an 80% chance of a hit. Twenty is 96%. Thirty
+    gave two hits — exactly the distribution.
+  </p>
+
+  <h3>The paths that don't work at all</h3>
+  <p>
+    <code>chain_poops.js</code> — the full chain with jailbreak, kernel patches, payload
+    thread — does not work on 13.02. Sony patched the <code>netcontrol</code> refcount
+    imbalance. <code>SET</code> does <code>fget</code> +1 and does not drop the ref on
+    the fresh-store path. <code>CLEAR</code> does <code>fget</code> +1 and drops twice.
+    Net: zero. On 13.00 <code>SET</code> did an unconditional <code>fdrop</code>, giving
+    net −1 per pair, which is the UAF. On 13.02 the <code>fdrop</code> is conditional.
+    Every run of <code>chain_poops.js</code> on 13.02 dead-ends at
+    <code>ALIAS-PROBE partner=-</code>. Forever.
+  </p>
+  <p>
+    <code>ipmi_test.js</code> — probes syscall 622. Uses the same <code>window.p</code>
+    primitive. Same lottery. Does not bypass anything. An entirely separate investigation
+    that happens to need the same foundation.
+  </p>
+
+  <h3>What broke and got fixed</h3>
+  <p>
+    <code>phex()</code> and <code>i64ToNum()</code> read <code>v.lo</code> instead of
+    <code>v.low</code>. <code>int64.js</code> stores the low half as <code>.low</code>.
+    Every read printed <code>0x0000000200000000</code> because the low 32 bits came back
+    <code>undefined</code>. Five characters, four places.
+  </p>
+  <p>
+    <code>plausibleAddress()</code> rejected kernel addresses. It was written for JSC
+    heap bounds and threw on <code>0xffffffff80000000</code>. Every read past
+    <code>BASES</code> died. Fixed by adding a kernel branch.
+  </p>
+
+  <h2>Where the road actually ends</h2>
+
+  <p>
+    Here is the thing I have been circling for a week. There is one function in
+    <code>core.js</code> whose absence is the difference between 15% and 95%:
+  </p>
+
+  <p style="text-align:center;font-family:var(--mono);font-size:16px;color:var(--gold);margin:32px 0">
+    <code style="font-size:16px;padding:6px 12px">beforeCriticalLoad</code>
+  </p>
+
+  <p>
+    <code>core.js</code> accepts an option called <code>beforeCriticalLoad</code>. If
+    you pass one, it runs between the SSV grooming and the state-blob deserialization.
+    Its job is to nudge JSC's allocator into committing a fresh cell at exactly the fake
+    address. With it, placement is deterministic. Without it, you get a stub that writes
+    a string to a hidden div and creates a Blob, and does nothing else.
+  </p>
+
+  <p>
+    That stub is what I have. That stub is why I cold boot.
+  </p>
+
+  <p>
+    The reference chain on FW 11.00 does not have a real <code>beforeCriticalLoad</code>
+    either. It wins because 160 MB of pattern covers the entire heap — any cell the
+    allocator hands out is inside the pattern. On 13.02, no carrier is big enough. The
+    missing callback is what substitutes for the missing memory.
+  </p>
+
+  <blockquote>
+    Whoever has a real <code>beforeCriticalLoad</code> for 13.02 is holding the one piece.
+    Everything in this chain depends on that one function. Every other knob — slab, pred,
+    sep, slots, drain — is a workaround for its absence. Find it, and the cold boots go
+    away, the OOMs go away, the ZERO-HEADER-MISSes go away, and the chain runs first try
+    like the FW 11.00 reference does.
+  </blockquote>
+
+  <h2>The ask</h2>
+
+  <p>
+    Run the launcher below. One cold boot. One URL. One roll of the dice.
+  </p>
+
+  <p>
+    If <code>PRIM-OK</code> prints, the chain is real. The walk runs. The
+    <code>FN_BYTES</code> line that comes out the other end names <code>pru_bind</code>
+    in Ghidra. That answers the question I started with.
+  </p>
+
+  <p>
+    Send me that <code>FN_BYTES</code> line. Post it publicly. Or send the whole
+    terminal output. <em>That value is the one piece.</em>
+  </p>
+
+  <p>
+    If <code>PRIM-OK</code> does not print, you got one of four failure modes. Every one
+    is documented above. Cold boot and try again. The dice are the dice.
+  </p>
+
+  <hr>
+
+  <h2>How to run</h2>
+
+  <div class="note">
+    <b>Cold boot required.</b> Close the browser completely. Power off the PS4 —
+    and unplug it for 30 seconds. Power on, wait two minutes, then open the browser.
+    Do not open any other tab. A warm boot or a reload reuses the previous renderer's
+    heap and the chain will OOM at <code>ADDROF-PREP-BEGIN</code>.
+  </div>
+
+  <p>
+    The launcher reads <code>core.js</code>, <code>int64.js</code>, <code>ps4_offsets.js</code>,
+    and <code>fn_leak.js</code> from the same directory. Nothing else is needed.
+  </p>
+
+  <section class="launch">
+    <h2>Set sail</h2>
+    <p class="lead">
+      Press the button. The chain runs once. One attempt, one cold boot, one roll.
+    </p>
+    <button id="go">Run the chain</button>
+    <pre id="out"></pre>
+    <div id="state"></div>
+  </section>
+
+  <section class="prize" id="prize" hidden>
+    <h2>You found the one piece.</h2>
+    <p class="call">PRIM-OK printed. The chain is real.</p>
+    <p>
+      The full output is above. What I need is the block that starts with
+      <code>FN-HEAD</code> and ends with the last <code>FN_BYTES</code> line. That's
+      <code>pru_bind</code>'s disassembly as the runtime sees it. Post it publicly —
+      paste site, forum, DM, anywhere I can read it. Whoever sends it first confirms
+      whether this is a jailbreak or a wall.
+    </p>
+    <pre>FN-HEAD  fn=0xffffffff8........
+FN_RVA   0x........
+FN_HINT  1302.elf.c  ->  FUN_........
+FN_BYTES  (16 lines of hex)</pre>
+    <p class="sig">
+      — bel<br>
+      <span style="color:var(--muted);font-size:12px">
+        https://jb.0d01.wtf &nbsp;·&nbsp; https://x.com/belsploit
+      </span>
+    </p>
+  </section>
+
+  <footer class="end">
+    <p>
+      Original SSV research: <b>Hassan</b>. 13.02 offsets: public dumps.
+      Kernel walk, <code>plausibleAddress</code> fix, and this writeup: bel.
+    </p>
+    <p>
+      <b>Everything in this chain depends on one value.</b> It's not the slab, not the
+      predecessor, not the slot count. It's <code>beforeCriticalLoad</code>. Whoever
+      produces one that works on 13.02 has the one piece.
+    </p>
+    <p>
+      <a href="https://jb.0d01.wtf" target="_blank" rel="noopener">jb.0d01.wtf</a>
+      &nbsp;·&nbsp;
+      <a href="https://x.com/belsploit" target="_blank" rel="noopener">@belsploit</a>
+    </p>
+  </footer>
+
+</main>
+
+<script>
+(function () {
+  var outEl = document.getElementById("out");
+  var prizeEl = document.getElementById("prize");
+  var goBtn = document.getElementById("go");
+  var revealed = false;
+
+  function check() {
+    if (revealed) return;
+    var txt = outEl.textContent || "";
+    if (/^PRIM-OK\b/m.test(txt)) {
+      revealed = true;
+      prizeEl.hidden = false;
+      prizeEl.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+
+  if (window.MutationObserver) {
+    new MutationObserver(check).observe(outEl, {
+      childList: true, characterData: true, subtree: true
+    });
+  }
+  setInterval(check, 400);
+
+  goBtn.addEventListener("click", function () {
+    goBtn.disabled = true;
+    goBtn.textContent = "sailing\u2026";
+    outEl.textContent = "";
+    var s = document.createElement("script");
+    s.type = "module";
+    s.src = "./fn_leak.js?v=" + Date.now();
+    document.body.appendChild(s);
+  });
+})();
+</script>
+
+</body>
+</html>
